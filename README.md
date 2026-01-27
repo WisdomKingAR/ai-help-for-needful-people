@@ -1,73 +1,137 @@
-# React + TypeScript + Vite
+# Accessibility AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive web application that leverages AI to break digital barriers and provide advanced accessibility features for all users.
 
-Currently, two official plugins are available:
+## 🌟 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### AI-Powered Bento Box
+- **Voice Navigation**: Navigate interfaces using voice commands with zero latency
+- **Screen Reader AI**: Deep content understanding with intelligent image and layout descriptions
+- **Real-time Captions**: Medical-grade accurate captions for all audio interactions
+- **Sign Language Translation**: Vision-based sign language to text conversion
+- **Smart Contrast**: Dynamic color adjustments tailored to individual visual needs
+- **Secure Authentication**: Advanced biometric and multi-factor security
 
-## React Compiler
+### Interactive Dashboard
+- Real-time accessibility statistics
+- Accessibility score trend visualization using Recharts
+- Comprehensive compliance metrics
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Security Features
+- JWT-based authentication
+- Rate limiting and brute-force protection
+- Input validation and sanitization
+- Secure password hashing with bcrypt
+- CORS and Helmet security middleware
 
-## Expanding the ESLint configuration
+## 🚀 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+- React 19 with TypeScript
+- Vite for fast development
+- Tailwind CSS for styling
+- Framer Motion for animations
+- Recharts for data visualization
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
+- Node.js with Express
+- Google Generative AI (Gemini) integration
+- JWT for authentication
+- Security middleware (Helmet, CORS, Rate Limiting)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📦 Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/tejaskute284-dotcom/ai-acessiblity.git
+cd ai-acessiblity
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Install frontend dependencies:
+```bash
+npm install
 ```
+
+3. Install backend dependencies:
+```bash
+cd server
+npm install
+cd ..
+```
+
+4. Create a `.env` file in the `server` directory (optional):
+```env
+PORT=5000
+JWT_SECRET=your-secret-key-here
+GEMINI_API_KEY=your-gemini-api-key-here
+```
+
+## 🎯 Usage
+
+### Development Mode
+
+1. Start the backend server:
+```bash
+cd server
+node index.js
+```
+
+2. In a new terminal, start the frontend development server:
+```bash
+npm run dev
+```
+
+3. Open your browser and navigate to `http://localhost:5173`
+
+### Production Build
+
+```bash
+npm run build
+```
+
+## 🔑 Key Features
+
+### Authentication Flow
+1. Click "Join Us" in the navigation bar
+2. Register a new account or login
+3. Access the dashboard after successful authentication
+
+### AI Features
+- Click on any feature card in the Bento Box to interact with AI
+- Receive real-time, context-aware responses
+- Experience smooth animations and visual feedback
+
+### Dashboard
+- View accessibility statistics
+- Track compliance levels
+- Monitor accessibility score trends over time
+
+## 🛡️ Security
+
+- All sensitive data is protected with environment variables
+- Passwords are hashed using bcrypt
+- JWT tokens for secure session management
+- Rate limiting to prevent abuse
+- Input validation on all endpoints
+
+## 📝 License
+
+This project is licensed under the ISC License.
+
+## 👥 Author
+
+TEJAS
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+## 📧 Support
+
+For support, please open an issue in the GitHub repository.

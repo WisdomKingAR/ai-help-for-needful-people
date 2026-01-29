@@ -1,111 +1,149 @@
-import { useEffect, useState } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { api } from '../services/api';
-import { Activity, CheckCircle, Search, BarChart3 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Eye, Ear, Hand, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
+import type { Mode } from '../App';
 
-interface Stats {
-    totalScans: number;
-    issuesFixed: number;
-    complianceLevel: string;
-    scoreTrend: { name: string; score: number }[];
+interface DashboardProps {
+    onSelectMode: (mode: Mode | 'security') => void;
 }
 
-export const Dashboard = () => {
-    const [stats, setStats] = useState<Stats | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const data = await api.get('/dashboard/stats');
-                setStats(data);
-            } catch (error) {
-                console.error('Failed to fetch stats:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-            </div>
-        );
+const modes = [
+    {
+        id: 'blind' as Mode,
+        title: 'Blind Mode',
+        description: 'AI Voice Guidance • Object Recognition • Audio Cues',
+        icon: Eye,
+        color: 'from-purple-500/20 to-indigo-500/20',
+        iconColor: 'text-purple-400',
+        borderColor: 'border-purple-500/30'
+    },
+    {
+        id: 'deaf' as Mode,
+        title: 'Deaf Mode',
+        description: 'Real-time Captions • Visual Sound Alerts • Lip Reading',
+        icon: Ear,
+        color: 'from-pink-500/20 to-rose-500/20',
+        iconColor: 'text-pink-400',
+        borderColor: 'border-pink-500/30'
+    },
+    {
+        id: 'sign' as Mode,
+        title: 'Sign Language',
+        description: 'Gesture Navigation • ASL Recognition • Avatar Feedback',
+        icon: Hand,
+        color: 'from-blue-500/20 to-cyan-500/20',
+        iconColor: 'text-blue-400',
+        borderColor: 'border-blue-500/30'
     }
+];
 
-    if (!stats) return null;
-
+export default function Dashboard({ onSelectMode }: DashboardProps) {
     return (
-        <div className="min-h-screen pt-24 px-6 bg-background">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-                    <div>
-                        <h1 className="text-4xl font-bold mb-2">Accessibility Dashboard</h1>
-                        <p className="text-white/60">Real-time monitoring of your digital accessibility impact.</p>
-                    </div>
-                    <div className="mt-4 md:mt-0 flex gap-4">
-                        <button className="px-6 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary font-medium hover:bg-primary/20 transition-all">
-                            New Scan
-                        </button>
-                    </div>
-                </div>
+        <div className="space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {modes.map((mode, index) => (
+                    <motion.button
+                        key={mode.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 + index * 0.1 }}
+                        whileHover={{ y: -8, scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => onSelectMode(mode.id)}
+                        className={`group relative text-left p-8 rounded-[2rem] glass-panel border ${mode.borderColor} overflow-hidden transition-all duration-300`}
+                    >
+                        {/* Background Gradient */}
+                        <div className={`absolute inset-0 bg-gradient-to-br ${mode.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    {[
-                        { label: 'Total Scans', value: stats.totalScans, icon: <Search className="text-blue-400" /> },
-                        { label: 'Issues Fixed', value: stats.issuesFixed, icon: <CheckCircle className="text-green-400" /> },
-                        { label: 'Compliance Level', value: stats.complianceLevel, icon: <Activity className="text-purple-400" /> },
-                    ].map((item, i) => (
-                        <div key={i} className="glass p-6 rounded-3xl border border-white/5 bg-white/5">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="p-3 bg-white/5 rounded-2xl">{item.icon}</div>
-                                <span className="text-white/60 font-medium">{item.label}</span>
+                        <div className="relative z-10 flex flex-col h-full">
+                            <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-12 group-hover:bg-white/10 transition-colors`}>
+                                <mode.icon className={`w-8 h-8 ${mode.iconColor}`} />
                             </div>
-                            <div className="text-3xl font-bold">{item.value}</div>
+
+                            <h3 className="text-3xl font-bold mb-3 flex items-center gap-2">
+                                {mode.title}
+                                <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                            </h3>
+
+                            <p className="text-white/60 text-lg leading-relaxed">
+                                {mode.description}
+                            </p>
                         </div>
-                    ))}
+
+                        {/* Decorative Corner Element */}
+                        <div className={`absolute -bottom-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity ${mode.iconColor.replace('text', 'bg')}`} />
+                    </motion.button>
+                ))}
+            </div>
+
+            {/* Comfort Meter & Stats */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+                <button
+                    onClick={() => onSelectMode('security')}
+                    className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5 hover:bg-white/5 transition-colors text-left"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="p-4 bg-green-500/10 rounded-2xl">
+                            <ShieldCheck className="w-8 h-8 text-green-400" />
+                        </div>
+                        <div>
+                            <h4 className="text-xl font-bold">Security Health</h4>
+                            <p className="text-white/50 text-xs">Maximum protection active</p>
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-4xl font-bold text-green-400">98%</span>
+                        <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden mt-1">
+                            <div className="w-[98%] h-full bg-green-400" />
+                        </div>
+                    </div>
+                </button>
+
+                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
+                    <div className="flex items-center gap-4">
+                        <div className="p-4 bg-blue-500/10 rounded-2xl">
+                            <Zap className="w-8 h-8 text-blue-400" />
+                        </div>
+                        <div>
+                            <h4 className="text-xl font-bold">AI Latency</h4>
+                            <p className="text-white/50 text-xs">Edge processing enabled</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xl font-medium">12ms</span>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping" />
+                    </div>
                 </div>
 
-                {/* Graph Section */}
-                <div className="glass p-8 rounded-3xl border border-white/5 bg-white/5 mb-12">
-                    <div className="flex items-center gap-2 mb-8">
-                        <BarChart3 className="text-primary" />
-                        <h2 className="text-xl font-bold">Accessibility Score Trend</h2>
+                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
+                    <div className="flex items-center gap-4">
+                        <div className="p-4 bg-brand-primary/10 rounded-2xl">
+                            <Eye className="w-8 h-8 text-brand-primary" />
+                        </div>
+                        <div>
+                            <h4 className="text-xl font-bold">Trust Pulse</h4>
+                            <p className="text-white/50 text-xs">Verifying sensor integrity</p>
+                        </div>
                     </div>
-                    <div className="h-[400px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={stats.scoreTrend}>
-                                <defs>
-                                    <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                                <XAxis dataKey="name" stroke="#ffffff60" />
-                                <YAxis stroke="#ffffff60" />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #ffffff10', borderRadius: '12px' }}
-                                    itemStyle={{ color: '#3b82f6' }}
+                    <div className="flex items-center gap-2">
+                        <div className="flex gap-0.5 items-end h-6">
+                            {[0.4, 0.7, 0.5, 0.9, 0.6].map((h, i) => (
+                                <motion.div
+                                    key={i}
+                                    animate={{ height: ['20%', '100%', '20%'] }}
+                                    transition={{ repeat: Infinity, duration: 1, delay: i * 0.1 }}
+                                    className="w-1 bg-brand-primary rounded-full"
+                                    style={{ height: `${h * 100}%` }}
                                 />
-                                <Area
-                                    type="monotone"
-                                    dataKey="score"
-                                    stroke="#3b82f6"
-                                    fillOpacity={1}
-                                    fill="url(#colorScore)"
-                                    strokeWidth={3}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
-};
+}

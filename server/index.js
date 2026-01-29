@@ -28,4 +28,16 @@ app.get('/health', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`[Accessibility AI Server] Secure server running on port ${PORT}`);
+    // Keep alive check
+    setInterval(() => {
+        // console.log('Server is heartbeat');
+    }, 5000);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
 });

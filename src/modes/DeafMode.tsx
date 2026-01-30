@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Info, Mic, MicOff, VolumeX, BellRing, MessageSquareQuote } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 interface DeafModeProps {
     onBack: () => void;
@@ -10,10 +11,18 @@ export default function DeafMode({ onBack }: DeafModeProps) {
     const [isListening, setIsListening] = useState(false);
     const [transcription, setTranscription] = useState<string[]>(["Welcome! Start listening to see real-time captions here."]);
     const [visualAlerts, setVisualAlerts] = useState<{ id: number; type: string }[]>([]);
+    const [permissionState, setPermissionState] = useState<'granted' | 'denied' | 'prompt'>('prompt');
     const recognitionRef = useRef<any>(null);
+    const { showToast } = useToast();
 
     useEffect(() => {
-        // Setup Speech Recognition
+        let audioContext: AudioContext;
+        let analyser: AnalyserNode;
+        let microphone: MediaStreamAudioSourceNode;
+        let dataArray: Uint8Array;
+        let animationFrameId: number;
+
+        // Initialize Speech Recognition
         if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
             recognitionRef.current = new SpeechRecognition();
@@ -31,38 +40,156 @@ export default function DeafMode({ onBack }: DeafModeProps) {
                 }
             };
 
+            recognitionRef.current.onerror = (event: any) => {
+                if (event.error === 'not-allowed' || event.error === 'permission-denied') {
+                    setPermissionState('denied');
+                    setIsListening(false);
+                }
+            };
+
             recognitionRef.current.onend = () => {
-                if (isListening) recognitionRef.current.start();
+                if (isListening && permissionState === 'granted') recognitionRef.current.start();
             };
         }
 
-        // Mock visual sound alerts
-        const interval = setInterval(() => {
-            if (isListening) {
-                const types = ['Doorbell', 'Phone Ringing', 'Sudden Noise', 'Speech Detected'];
-                const random = types[Math.floor(Math.random() * types.length)];
-                const id = Date.now();
-                setVisualAlerts(prev => [...prev, { id, type: random }]);
-                setTimeout(() => {
-                    setVisualAlerts(prev => prev.filter(alert => alert.id !== id));
-                }, 3000);
+        // Initialize Audio Analysis for Sound Detection
+        const initAudio = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                setPermissionState('granted');
+
+                audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+
+                const detectSound = () => {
+                    analyser.getByteFrequencyData(dataArray as any);
+
+                    // Calculate average volume
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const average = sum / bufferLength;
+
+                    // Threshold for "Loud Noise" detection (adjustable)
+                    if (average > 50) {
+                        // Debounce alerts slightly
+                        setVisualAlerts(prev => {
+                            const now = Date.now();
+                            if (prev.length > 0 && now - prev[prev.length - 1].id < 1000) return prev;
+
+                            const type = average > 100 ? 'Sudden Loud Noise' : 'Background Noise Detected';
+                            const newAlert = { id: now, type };
+
+                            // Auto-remove after 3s
+                            setTimeout(() => {
+                                setVisualAlerts(current => current.filter(alert => alert.id !== now));
+                            }, 3000);
+
+                            return [...prev, newAlert];
+                        });
+                    }
+
+                    if (isListening) {
+                        animationFrameId = requestAnimationFrame(detectSound);
+                    }
+                };
+
+                if (isListening) detectSound();
+
+            } catch (err: any) {
+                console.error("Microphone access denied for sound analysis", err);
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    setPermissionState('denied');
+                }
+                setIsListening(false);
             }
-        }, 10000);
+        };
+
+        if (isListening) {
+            initAudio();
+        }
+
+        // Add permission checks and toast messages
+        // This block assumes 'permission' object is available, likely from navigator.permissions.query({ name: 'microphone' })
+        // For now, we'll use a dummy 'permission' object or assume it's queried earlier.
+        // To make this syntactically correct and functional, we need to query the permission state.
+        const checkMicrophonePermission = async () => {
+            try {
+                const permission = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+
+                if (permission.state === 'granted') {
+                    setPermissionState('granted');
+                    // setIsListening(true); // This might cause an infinite loop if not handled carefully with isListening dependency
+                    showToast("Microphone Active", "success", "Listening for speech and sounds...");
+                } else if (permission.state === 'prompt') {
+                    setPermissionState('prompt');
+                } else {
+                    setPermissionState('denied');
+                    showToast("Microphone Access Denied", "error");
+                }
+
+                permission.addEventListener('change', () => {
+                    if (permission.state === 'granted') {
+                        setPermissionState('granted');
+                        showToast("Microphone Active", "success");
+                    } else {
+                        setPermissionState('denied');
+                        showToast("Microphone Access Denied", "error");
+                    }
+                });
+            } catch (error) {
+                console.error("Error querying microphone permission:", error);
+                setPermissionState('denied');
+                showToast("Microphone Access Denied", "error", "Could not check permission status.");
+            }
+        };
+
+        checkMicrophonePermission();
 
         return () => {
             if (recognitionRef.current) recognitionRef.current.stop();
-            clearInterval(interval);
+            if (audioContext) audioContext.close();
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
     }, [isListening]);
 
     const toggleListening = () => {
+        if (permissionState === 'denied') return;
+
         if (isListening) {
             recognitionRef.current?.stop();
         } else {
-            recognitionRef.current?.start();
+            try {
+                recognitionRef.current?.start();
+            } catch (e) {
+                // Ignore start errors if already started
+            }
         }
         setIsListening(!isListening);
     };
+
+    if (permissionState === 'denied') {
+        return (
+            <div className="flex flex-col items-center justify-center h-[600px] glass-panel rounded-[2.5rem] p-8 text-center space-y-6">
+                <div className="w-24 h-24 bg-pink-500/20 rounded-full flex items-center justify-center animate-pulse">
+                    <MicOff className="w-12 h-12 text-pink-500" />
+                </div>
+                <h3 className="text-3xl font-bold">Microphone Access Required</h3>
+                <p className="text-xl text-white/60 max-w-md">
+                    To hear the world for you, I need access to your microphone. Please allow microphone permissions in your browser settings.
+                </p>
+                <button onClick={onBack} className="px-8 py-4 bg-white/10 hover:bg-white/20 rounded-2xl font-bold transition-colors">
+                    Back to Home
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8 relative">

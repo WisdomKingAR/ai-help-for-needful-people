@@ -1,32 +1,26 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Settings, Menu, Mic, Camera, Shield, LogOut } from 'lucide-react';
+import { Brain, Mic, Camera } from 'lucide-react';
 import Assistant from './components/Assistant';
 import BlindMode from './modes/BlindMode';
 import DeafMode from './modes/DeafMode';
 import SignLanguageMode from './modes/SignLanguageMode';
 import Dashboard from './components/Dashboard';
-import SecurityPortal from './components/SecurityPortal';
-import Login from './components/Login';
+import SettingsDropdown from './components/SettingsDropdown';
 
-export type Mode = 'none' | 'blind' | 'deaf' | 'sign' | 'security';
+export type Mode = 'none' | 'blind' | 'deaf' | 'sign';
 
 function App() {
   const [activeMode, setActiveMode] = useState<Mode>('none');
   const [isAssistantExpanded, setIsAssistantExpanded] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     // Announce mode change for accessibility
-    if (activeMode !== 'none' && activeMode !== 'security') {
+    if (activeMode !== 'none') {
       const utterance = new SpeechSynthesisUtterance(`${activeMode} mode activated`);
       window.speechSynthesis.speak(utterance);
     }
   }, [activeMode]);
-
-  if (!isAuthenticated) {
-    return <Login onLogin={() => setIsAuthenticated(true)} />;
-  }
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden text-white font-sans selection:bg-brand-primary selection:text-white">
@@ -51,27 +45,7 @@ function App() {
         </motion.div>
 
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => setActiveMode('security')}
-            className={`p-3 rounded-full glass-panel transition-all glow-focus ${activeMode === 'security' ? 'bg-brand-primary/20 border-brand-primary/50' : 'hover:bg-white/10'}`}
-            aria-label="Security Portal"
-          >
-            <Shield className={`w-5 h-5 ${activeMode === 'security' ? 'text-brand-primary' : ''}`} />
-          </button>
-          <button
-            onClick={() => setIsAuthenticated(false)}
-            className="p-3 rounded-full glass-panel hover:bg-white/10 transition-colors glow-focus"
-            aria-label="Logout"
-          >
-            <LogOut className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setActiveMode('none')}
-            className="p-3 rounded-full glass-panel hover:bg-white/10 transition-colors glow-focus"
-            aria-label="Menu"
-          >
-            {activeMode === 'none' ? <Settings className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          <SettingsDropdown />
         </div>
       </nav>
 
@@ -140,21 +114,6 @@ function App() {
               <SignLanguageMode onBack={() => setActiveMode('none')} />
             </motion.div>
           )}
-
-          {activeMode === 'security' && (
-            <motion.div
-              key="security-portal"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.05 }}
-            >
-              <header className="mb-12">
-                <h2 className="text-4xl font-bold mb-2">Security Portal</h2>
-                <p className="text-white/50 italic">Your data remains yours. Always.</p>
-              </header>
-              <SecurityPortal />
-            </motion.div>
-          )}
         </AnimatePresence>
       </main>
 
@@ -178,11 +137,6 @@ function App() {
         <button className="p-2 hover:text-brand-primary transition-colors aria-label='Quick Camera Scan'">
           <Camera className="w-6 h-6" />
         </button>
-        <div className="w-px h-6 bg-white/20" />
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-          <span className="text-sm font-medium opacity-80">Encryption Active</span>
-        </div>
       </motion.div>
     </div>
   );

@@ -12,7 +12,14 @@ const PORT = process.env.PORT || 5000;
 // Security Middlewares
 app.use(helmet());
 app.use(cors({
-    origin: 'http://localhost:5173', // Vite default port
+    origin: function (origin, callback) {
+        // Allow any localhost origin or no origin (postman/mobile)
+        if (!origin || origin.match(/^http:\/\/localhost:\d+$/) || origin.match(/^http:\/\/127\.0\.0\.1:\d+$/)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 app.use(express.json());

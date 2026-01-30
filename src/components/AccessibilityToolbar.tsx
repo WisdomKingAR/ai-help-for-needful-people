@@ -1,9 +1,13 @@
 import { motion } from 'framer-motion';
-import { Settings, Contrast, Type } from 'lucide-react';
+import { Settings, Contrast, Type, Hand, Mic, Volume2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { GesturePanel } from './GesturePanel';
+import { STTPanel } from './STTPanel';
+import { TTSPanel } from './TTSPanel';
 
 export const AccessibilityToolbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState<'settings' | 'gestures' | 'stt' | 'tts'>('settings');
     const [highContrast, setHighContrast] = useState(false);
     const [fontSize, setFontSize] = useState(1);
 
@@ -35,54 +39,88 @@ export const AccessibilityToolbar = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20, scale: 0.9 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    className="absolute bottom-20 right-0 w-64 glass p-6 border-white/20 shadow-2xl"
+                    className="absolute bottom-20 right-0 w-80 glass p-6 border-white/20 shadow-2xl max-h-[600px] overflow-y-auto"
                 >
-                    <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                        <Settings size={20} className="text-primary" /> Settings
-                    </h3>
-
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Contrast size={18} />
-                                <span className="font-medium">Contrast</span>
-                            </div>
-                            <button
-                                onClick={() => setHighContrast(!highContrast)}
-                                className={`w-12 h-6 rounded-full transition-colors ${highContrast ? 'bg-primary' : 'bg-white/10'}`}
-                            >
-                                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-7' : 'translate-x-1'}`} />
-                            </button>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-3 mb-2">
-                                <Type size={18} />
-                                <span className="font-medium">Text Size</span>
-                            </div>
-                            <div className="flex gap-2">
-                                {[0.8, 1, 1.2, 1.5].map((s) => (
-                                    <button
-                                        key={s}
-                                        onClick={() => setFontSize(s)}
-                                        className={`flex-1 py-2 rounded-lg text-sm font-bold border ${fontSize === s ? 'bg-primary border-primary' : 'bg-white/5 border-white/10'}`}
-                                    >
-                                        {s === 1 ? 'Default' : `${Math.round(s * 100)}%`}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
+                    {/* Tab Buttons */}
+                    <div className="flex gap-1 mb-4 overflow-x-auto pb-2 scrollbar-thin">
                         <button
-                            onClick={() => {
-                                setHighContrast(false);
-                                setFontSize(1);
-                            }}
-                            className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-bold transition-colors mt-4"
+                            onClick={() => setActiveTab('settings')}
+                            className={`p-2 rounded-lg transition ${activeTab === 'settings' ? 'bg-primary text-white' : 'bg-white/10 hover:bg-white/20'}`}
+                            title="Settings"
                         >
-                            Reset to Default
+                            <Settings size={18} />
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('gestures')}
+                            className={`p-2 rounded-lg transition ${activeTab === 'gestures' ? 'bg-primary text-white' : 'bg-white/10 hover:bg-white/20'}`}
+                            title="Gestures"
+                        >
+                            <Hand size={18} />
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('stt')}
+                            className={`p-2 rounded-lg transition ${activeTab === 'stt' ? 'bg-primary text-white' : 'bg-white/10 hover:bg-white/20'}`}
+                            title="Speech to Text"
+                        >
+                            <Mic size={18} />
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('tts')}
+                            className={`p-2 rounded-lg transition ${activeTab === 'tts' ? 'bg-primary text-white' : 'bg-white/10 hover:bg-white/20'}`}
+                            title="Text to Speech"
+                        >
+                            <Volume2 size={18} />
                         </button>
                     </div>
+
+                    {activeTab === 'settings' && (
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Contrast size={18} />
+                                    <span className="font-medium">Contrast</span>
+                                </div>
+                                <button
+                                    onClick={() => setHighContrast(!highContrast)}
+                                    className={`w-12 h-6 rounded-full transition-colors ${highContrast ? 'bg-primary' : 'bg-white/10'}`}
+                                >
+                                    <div className={`w-4 h-4 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-7' : 'translate-x-1'}`} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Type size={18} />
+                                    <span className="font-medium">Text Size</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    {[0.8, 1, 1.2, 1.5].map((s) => (
+                                        <button
+                                            key={s}
+                                            onClick={() => setFontSize(s)}
+                                            className={`flex-1 py-2 rounded-lg text-sm font-bold border ${fontSize === s ? 'bg-primary border-primary' : 'bg-white/5 border-white/10'}`}
+                                        >
+                                            {s === 1 ? 'Default' : `${Math.round(s * 100)}%`}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    setHighContrast(false);
+                                    setFontSize(1);
+                                }}
+                                className="w-full py-3 bg-white/5 hover:bg-white/10 rounded-xl text-sm font-bold transition-colors mt-4"
+                            >
+                                Reset to Default
+                            </button>
+                        </div>
+                    )}
+
+                    {activeTab === 'gestures' && <GesturePanel />}
+                    {activeTab === 'stt' && <STTPanel />}
+                    {activeTab === 'tts' && <TTSPanel />}
                 </motion.div>
             )}
         </div>

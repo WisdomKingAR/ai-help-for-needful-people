@@ -3,7 +3,7 @@ import { Eye, Ear, Hand, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import type { Mode } from '../App';
 
 interface DashboardProps {
-    onSelectMode: (mode: Mode | 'security') => void;
+    onSelectMode: (mode: Mode) => void;
 }
 
 const modes = [
@@ -82,26 +82,23 @@ export default function Dashboard({ onSelectMode }: DashboardProps) {
                 transition={{ delay: 0.8 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-                <button
-                    onClick={() => onSelectMode('security')}
-                    className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5 hover:bg-white/5 transition-colors text-left"
-                >
+                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
                     <div className="flex items-center gap-4">
                         <div className="p-4 bg-green-500/10 rounded-2xl">
                             <ShieldCheck className="w-8 h-8 text-green-400" />
                         </div>
                         <div>
-                            <h4 className="text-xl font-bold">Security Health</h4>
-                            <p className="text-white/50 text-xs">Maximum protection active</p>
+                            <h4 className="text-xl font-bold">System Secure</h4>
+                            <p className="text-white/50 text-xs">All systems operational</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
-                        <span className="text-4xl font-bold text-green-400">98%</span>
+                        <span className="text-4xl font-bold text-green-400">100%</span>
                         <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden mt-1">
-                            <div className="w-[98%] h-full bg-green-400" />
+                            <div className="w-full h-full bg-green-400" />
                         </div>
                     </div>
-                </button>
+                </div>
 
                 <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
                     <div className="flex items-center gap-4">

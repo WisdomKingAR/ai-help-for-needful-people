@@ -11,7 +11,7 @@ const modes = [
         label: "Visual Assistance",
         sub: "For Blind / Low Vision",
         icon: EyeOff,
-        color: "from-blue-500 to-cyan-400",
+        color: "from-[#4A90E2] to-[#5FD3BC]",
         desc: "AI narrators & object recognition"
     },
     {
@@ -19,7 +19,7 @@ const modes = [
         label: "Sound Visualizer",
         sub: "For Deaf / Hard of Hearing",
         icon: EarOff,
-        color: "from-purple-500 to-pink-500",
+        color: "from-[#FFB84D] to-[#F59E0B]",
         desc: "Live captions & sound alerts"
     },
     {
@@ -27,7 +27,7 @@ const modes = [
         label: "Sign Interpreter",
         sub: "Sign Language Users",
         icon: Hand,
-        color: "from-orange-400 to-yellow-400",
+        color: "from-[#B89FD9] to-[#8B5CF6]",
         desc: "Gesture control & signing avatar"
     }
 ] as const;
@@ -52,9 +52,9 @@ export function ModeSelector({ onSelect }: ModeSelectorProps) {
                         </div>
 
                         <div>
-                            <h3 className="text-2xl font-bold text-white mb-2">{mode.label}</h3>
-                            <p className="text-white/60 text-sm font-medium mb-4 uppercase tracking-wider">{mode.sub}</p>
-                            <p className="text-white/80 text-sm leading-relaxed">{mode.desc}</p>
+                            <h3 className="text-2xl font-bold text-[#1A2847] mb-2">{mode.label}</h3>
+                            <p className="text-gray-500 text-sm font-medium mb-4 uppercase tracking-wider">{mode.sub}</p>
+                            <p className="text-gray-700 text-sm leading-relaxed">{mode.desc}</p>
                         </div>
                     </div>
 

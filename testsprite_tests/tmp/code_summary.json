@@ -1,0 +1,42 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "React",
+    "Vite",
+    "Tailwind CSS",
+    "TensorFlow.js",
+    "MediaPipe"
+  ],
+  "features": [
+    {
+      "name": "Blind Mode",
+      "description": "Object detection using TensorFlow.js COCO-SSD model with text-to-speech announcements.",
+      "files": [
+        "src/modes/BlindMode.tsx"
+      ]
+    },
+    {
+      "name": "Deaf Mode",
+      "description": "Real-time speech-to-text transcription for deaf users, with visual sound alerts.",
+      "files": [
+        "src/modes/DeafMode.tsx"
+      ]
+    },
+    {
+      "name": "Sign Language Mode",
+      "description": "ASL gesture recognition using MediaPipe and custom heuristics for alphabet/numbers.",
+      "files": [
+        "src/modes/SignLanguageMode.tsx",
+        "src/features/vision/aslHeuristics.ts",
+        "src/features/vision/useHandGesture.ts"
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "Main navigation hub for accessing different accessibility modes.",
+      "files": [
+        "src/components/Dashboard.tsx"
+      ]
+    }
+  ]
+}

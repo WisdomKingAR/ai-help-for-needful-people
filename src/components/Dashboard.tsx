@@ -12,27 +12,27 @@ const modes = [
         title: 'Blind Mode',
         description: 'AI Voice Guidance • Object Recognition • Audio Cues',
         icon: Eye,
-        color: 'from-purple-500/20 to-indigo-500/20',
-        iconColor: 'text-purple-400',
-        borderColor: 'border-purple-500/30'
+        color: 'from-brand-primary/10 to-brand-accent/10',
+        iconColor: 'text-brand-primary',
+        borderColor: 'border-brand-primary/30'
     },
     {
         id: 'deaf' as Mode,
         title: 'Deaf Mode',
         description: 'Real-time Captions • Visual Sound Alerts • Lip Reading',
         icon: Ear,
-        color: 'from-pink-500/20 to-rose-500/20',
-        iconColor: 'text-pink-400',
-        borderColor: 'border-pink-500/30'
+        color: 'from-brand-secondary/10 to-orange-400/10',
+        iconColor: 'text-brand-secondary',
+        borderColor: 'border-brand-secondary/30'
     },
     {
         id: 'sign' as Mode,
         title: 'Sign Language',
         description: 'Gesture Navigation • ASL Recognition • Avatar Feedback',
         icon: Hand,
-        color: 'from-blue-500/20 to-cyan-500/20',
-        iconColor: 'text-blue-400',
-        borderColor: 'border-blue-500/30'
+        color: 'from-brand-purple/10 to-purple-400/10',
+        iconColor: 'text-brand-purple',
+        borderColor: 'border-brand-purple/30'
     }
 ];
 
@@ -55,16 +55,16 @@ export default function Dashboard({ onSelectMode }: DashboardProps) {
                         <div className={`absolute inset-0 bg-gradient-to-br ${mode.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
                         <div className="relative z-10 flex flex-col h-full">
-                            <div className={`w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-12 group-hover:bg-white/10 transition-colors`}>
+                            <div className={`w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-12 group-hover:bg-gray-50 transition-colors`}>
                                 <mode.icon className={`w-8 h-8 ${mode.iconColor}`} />
                             </div>
 
-                            <h3 className="text-3xl font-bold mb-3 flex items-center gap-2">
+                            <h3 className="text-3xl font-bold mb-3 flex items-center gap-2 text-[#1A2847]">
                                 {mode.title}
                                 <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
                             </h3>
 
-                            <p className="text-white/60 text-lg leading-relaxed">
+                            <p className="text-gray-500 text-lg leading-relaxed">
                                 {mode.description}
                             </p>
                         </div>
@@ -82,14 +82,14 @@ export default function Dashboard({ onSelectMode }: DashboardProps) {
                 transition={{ delay: 0.8 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
+                <div className="clay-card rounded-3xl p-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="p-4 bg-green-500/10 rounded-2xl">
                             <ShieldCheck className="w-8 h-8 text-green-400" />
                         </div>
                         <div>
-                            <h4 className="text-xl font-bold">System Secure</h4>
-                            <p className="text-white/50 text-xs">All systems operational</p>
+                            <h4 className="text-xl font-bold text-[#1A2847]">System Secure</h4>
+                            <p className="text-gray-400 text-xs">All systems operational</p>
                         </div>
                     </div>
                     <div className="flex flex-col items-end">
@@ -100,30 +100,30 @@ export default function Dashboard({ onSelectMode }: DashboardProps) {
                     </div>
                 </div>
 
-                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
+                <div className="clay-card rounded-3xl p-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="p-4 bg-blue-500/10 rounded-2xl">
                             <Zap className="w-8 h-8 text-blue-400" />
                         </div>
                         <div>
-                            <h4 className="text-xl font-bold">AI Latency</h4>
-                            <p className="text-white/50 text-xs">Edge processing enabled</p>
+                            <h4 className="text-xl font-bold text-[#1A2847]">AI Latency</h4>
+                            <p className="text-gray-400 text-xs">Edge processing enabled</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xl font-medium">12ms</span>
+                        <span className="text-xl font-medium text-[#1A2847]">12ms</span>
                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-ping" />
                     </div>
                 </div>
 
-                <div className="glass-panel rounded-3xl p-8 flex items-center justify-between border border-white/5">
+                <div className="clay-card rounded-3xl p-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="p-4 bg-brand-primary/10 rounded-2xl">
                             <Eye className="w-8 h-8 text-brand-primary" />
                         </div>
                         <div>
-                            <h4 className="text-xl font-bold">Trust Pulse</h4>
-                            <p className="text-white/50 text-xs">Verifying sensor integrity</p>
+                            <h4 className="text-xl font-bold text-[#1A2847]">Trust Pulse</h4>
+                            <p className="text-gray-400 text-xs">Verifying sensor integrity</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">

@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "executionArgs": {
+    "projectName": "accessibility-ai",
+    "projectPath": "d:\\AARYAN\\HACKATHONS\\ACCESSIBILITY AI\\CODES\\ai-help-for-needful-people",
+    "testIds": [],
+    "additionalInstruction": "Execute tests again. All speech synthesis issues should be fixed now.",
+    "envs": {
+      "API_KEY": "sk-user-yE_qRnIlwq4as4tnV4SX6ZhuZBHDO-ZSIBS88AIC2iW4yVuGclDoXVUViNKQD6KNp9ZXPvXvIg920OxAMhLQLugh-2xgO0Wg9CI_rshconWvC8eL9-h2N6PxQjFuOSMtBRQ"
+    }
+  },
+  "proxy": "http://d3ff4db3-e5d7-457b-aaea-ab9fd2d54352:kkCCe0ViUtcNLmV6SLAtETs7OYHq039M@tun.testsprite.com:8080"
+}

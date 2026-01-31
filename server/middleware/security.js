@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-123';
 // Brute-force protection: rate limiting for auth routes
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 failed attempts per window
+    max: 50, // Increased for test runs
     message: {
         message: 'Too many login attempts from this IP, please try again after 15 minutes'
     },

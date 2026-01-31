@@ -28,10 +28,10 @@ export default function Login({ onLogin }: LoginProps) {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-6 relative overflow-hidden bg-[#050510]">
+        <div className="min-h-screen w-full flex items-center justify-center p-6 relative overflow-hidden bg-[#F8F9FB]">
             {/* Background Glows */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-primary/20 blur-[120px] rounded-full animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-secondary/20 blur-[120px] rounded-full animate-pulse" />
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-primary/10 blur-[120px] rounded-full animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-secondary/10 blur-[120px] rounded-full animate-pulse" />
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -42,12 +42,12 @@ export default function Login({ onLogin }: LoginProps) {
                     <motion.div
                         initial={{ rotate: -10, scale: 0.8 }}
                         animate={{ rotate: 0, scale: 1 }}
-                        className="w-20 h-20 bg-gradient-to-tr from-brand-primary to-brand-secondary rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand-primary/20"
+                        className="w-20 h-20 bg-gradient-to-tr from-brand-primary to-brand-accent rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-brand-primary/20"
                     >
                         <Shield className="w-10 h-10 text-white" />
                     </motion.div>
-                    <h1 className="text-4xl font-extrabold mb-2">Welcome Back</h1>
-                    <p className="text-white/50">Securely sign in to your AI companion</p>
+                    <h1 className="text-4xl font-extrabold mb-2 text-[#1A2847]">Welcome Back</h1>
+                    <p className="text-gray-500">Securely sign in to your AI companion</p>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -61,13 +61,13 @@ export default function Login({ onLogin }: LoginProps) {
                         >
                             <div className="space-y-4">
                                 <div className="relative group">
-                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-brand-primary transition-colors">
+                                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-primary transition-colors">
                                         <Lock className="w-5 h-5" />
                                     </div>
                                     <input
                                         type="password"
                                         placeholder="Security Pattern or Pin"
-                                        className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 outline-none focus:border-brand-primary/50 focus:bg-white/10 transition-all font-medium"
+                                        className="w-full h-16 bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 outline-none focus:border-brand-primary/50 focus:bg-white transition-all font-medium text-[#1A2847]"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
@@ -91,19 +91,19 @@ export default function Login({ onLogin }: LoginProps) {
                             </motion.button>
 
                             <div className="flex items-center gap-4 py-4">
-                                <div className="h-px bg-white/10 flex-1" />
-                                <span className="text-xs uppercase tracking-widest text-white/30 font-bold">or use biometric</span>
-                                <div className="h-px bg-white/10 flex-1" />
+                                <div className="h-px bg-gray-200 flex-1" />
+                                <span className="text-xs uppercase tracking-widest text-gray-400 font-bold">or use biometric</span>
+                                <div className="h-px bg-gray-200 flex-1" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <button className="h-16 glass-panel rounded-2xl border-white/5 flex items-center justify-center gap-3 hover:bg-white/10 transition-colors">
+                                <button className="h-16 clay-card flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors">
                                     <Fingerprint className="w-6 h-6 text-brand-secondary" />
-                                    <span className="text-sm font-medium">Touch</span>
+                                    <span className="text-sm font-medium text-[#1A2847]">Touch</span>
                                 </button>
-                                <button className="h-16 glass-panel rounded-2xl border-white/5 flex items-center justify-center gap-3 hover:bg-white/10 transition-colors">
-                                    <Sparkles className="w-6 h-6 text-blue-400" />
-                                    <span className="text-sm font-medium">Face ID</span>
+                                <button className="h-16 clay-card flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors">
+                                    <Sparkles className="w-6 h-6 text-brand-primary" />
+                                    <span className="text-sm font-medium text-[#1A2847]">Face ID</span>
                                 </button>
                             </div>
                         </motion.div>
@@ -119,8 +119,8 @@ export default function Login({ onLogin }: LoginProps) {
                                 <div className="w-16 h-16 bg-brand-secondary/10 rounded-full mx-auto mb-4 flex items-center justify-center">
                                     <KeyRound className="w-8 h-8 text-brand-secondary" />
                                 </div>
-                                <h3 className="text-xl font-bold mb-2">Double Verification</h3>
-                                <p className="text-white/50 text-sm px-6">We've sent a magical code to your registered device.</p>
+                                <h3 className="text-xl font-bold mb-2 text-[#1A2847]">Double Verification</h3>
+                                <p className="text-gray-500 text-sm px-6">We've sent a magical code to your registered device.</p>
                             </div>
 
                             <div className="flex justify-center gap-3">
@@ -129,7 +129,7 @@ export default function Login({ onLogin }: LoginProps) {
                                         key={i}
                                         type="text"
                                         maxLength={1}
-                                        className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl text-center text-2xl font-bold outline-none focus:border-brand-secondary/50 focus:bg-white/10 transition-all"
+                                        className="w-14 h-14 bg-gray-50 border border-gray-200 rounded-2xl text-center text-2xl font-bold outline-none focus:border-brand-secondary/50 focus:bg-white transition-all text-[#1A2847]"
                                         autoFocus={i === 1}
                                     />
                                 ))}
@@ -151,7 +151,7 @@ export default function Login({ onLogin }: LoginProps) {
 
                             <button
                                 onClick={() => setStep('creds')}
-                                className="w-full text-white/40 text-sm hover:text-white transition-colors"
+                                className="w-full text-gray-400 text-sm hover:text-gray-700 transition-colors"
                             >
                                 Go back to password
                             </button>
@@ -165,7 +165,7 @@ export default function Login({ onLogin }: LoginProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/40"
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 text-gray-400"
             >
                 <Lock className="w-4 h-4" />
                 <span className="text-xs font-medium uppercase tracking-widest">Quantum Encryption Active</span>

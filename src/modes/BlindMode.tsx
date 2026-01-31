@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
-import { ChevronLeft, Volume2, Eye, EyeOff, AlertCircle, Loader2, Box, Type } from 'lucide-react';
+import { ChevronLeft, Eye, EyeOff, AlertCircle, Box, Type } from 'lucide-react';
 import * as tf from '@tensorflow/tfjs';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 import { useToast } from '../context/ToastContext';
@@ -17,21 +17,37 @@ export default function BlindMode({ onBack }: BlindModeProps) {
     const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
     const [predictions, setPredictions] = useState<cocoSsd.DetectedObject[]>([]);
     const [permissionState, setPermissionState] = useState<'granted' | 'denied' | 'prompt' | 'error'>('prompt');
+    const [showVisuals, setShowVisuals] = useState(true);
     const webcamRef = useRef<Webcam>(null);
     const requestRef = useRef<number | null>(null);
     const lastSpokenTime = useRef<number>(0);
+    const detectionCountRef = useRef<{ [key: string]: number }>({});
+    const isSpeakingRef = useRef<boolean>(false);
 
     const { showToast } = useToast();
 
     // Text-to-Speech Helper
-    const announce = useCallback((text: string) => {
+    const announce = useCallback((text: string, force = false) => {
         const now = Date.now();
-        // Debounce same message within 2 seconds
-        if (now - lastSpokenTime.current < 2000 && text === lastAnnouncement) return;
 
-        window.speechSynthesis.cancel();
+        // 1. Minimum silence between ANY announcements (1.5 seconds)
+        if (!force && (now - lastSpokenTime.current < 1500)) return;
+
+        // 2. Longer debounce for the SAME message (4 seconds)
+        if (!force && (text === lastAnnouncement) && (now - lastSpokenTime.current < 4000)) return;
+
+        // 3. Don't interrupt unless forced
+        if (!force && window.speechSynthesis.speaking) return;
+
+        if (!('speechSynthesis' in window)) return;
+
+        if (force) window.speechSynthesis.cancel();
+
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = 1.0;
+        utterance.onstart = () => { isSpeakingRef.current = true; };
+        utterance.onend = () => { isSpeakingRef.current = false; };
+
         window.speechSynthesis.speak(utterance);
         lastSpokenTime.current = now;
         setLastAnnouncement(text);
@@ -80,13 +96,26 @@ export default function BlindMode({ onBack }: BlindModeProps) {
             setPredictions(preds);
 
             if (preds.length > 0) {
-                // Find the most confident prediction
-                const bestPrediction = preds.reduce((prev, current) => (prev.score > current.score) ? prev : current);
+                // Find potential candidates
+                const candidates = preds.filter(p => p.score > 0.65);
 
-                // Announce if high confidence
-                if (bestPrediction.score > 0.7) {
-                    announce(`I see a ${bestPrediction.class}`);
+                if (candidates.length > 0) {
+                    const best = candidates.reduce((prev, curr) => (prev.score > curr.score) ? prev : curr);
+
+                    // Persistence Check: Must be seen in 2 consecutive frames
+                    const count = (detectionCountRef.current[best.class] || 0) + 1;
+                    detectionCountRef.current = { [best.class]: count };
+
+                    if (count >= 2) {
+                        announce(`I see a ${best.class}`);
+                        // Reset count after announcement to prevent immediate repeat
+                        detectionCountRef.current[best.class] = -10; // Lighter penalty
+                    }
+                } else {
+                    detectionCountRef.current = {};
                 }
+            } else {
+                detectionCountRef.current = {};
             }
         }
         requestRef.current = requestAnimationFrame(detect);
@@ -171,19 +200,32 @@ export default function BlindMode({ onBack }: BlindModeProps) {
                         </span>
                     )}
                 </div>
-                <button
-                    onClick={() => setIsScanning(!isScanning)}
-                    className={`p-4 rounded-2xl transition-all duration-300 ${isScanning
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setShowVisuals(!showVisuals)}
+                        title={showVisuals ? "Hide Visual Feedback" : "Show Visual Feedback"}
+                        className={`p-4 rounded-2xl transition-all border ${showVisuals
+                            ? 'bg-brand-primary/20 text-brand-primary border-brand-primary/30'
+                            : 'bg-white/5 text-white/40 border-white/10'
+                            }`}
+                    >
+                        <Box size={24} />
+                    </button>
+                    <button
+                        onClick={() => setIsScanning(!isScanning)}
+                        className={`p-4 rounded-2xl transition-all duration-300 ${isScanning
                             ? 'bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30'
                             : 'bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30'
-                        }`}
-                >
-                    {isScanning ? <EyeOff size={24} /> : <Eye size={24} />}
-                </button>
+                            }`}
+                    >
+                        {isScanning ? <EyeOff size={24} /> : <Eye size={24} />}
+                    </button>
+                </div>
             </div>
 
             {/* Main Viewfinder */}
-            <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border-2 border-white/10 shadow-2xl bg-black">
+            <div className={`relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border-2 transition-all duration-500 ${showVisuals ? 'border-brand-primary/30 shadow-[0_0_50px_rgba(var(--brand-primary-rgb),0.15)]' : 'border-white/10 shadow-2xl'
+                } bg-black`}>
                 <Webcam
                     ref={webcamRef}
                     audio={false}
@@ -192,7 +234,7 @@ export default function BlindMode({ onBack }: BlindModeProps) {
                 />
 
                 {/* Bounding Boxes */}
-                {predictions.map((pred, i) => (
+                {showVisuals && predictions.map((pred, i) => (
                     <motion.div
                         key={i}
                         initial={{ opacity: 0, scale: 0.9 }}

@@ -10,6 +10,7 @@ interface DeafModeProps {
 export default function DeafMode({ onBack }: DeafModeProps) {
     const [isListening, setIsListening] = useState(false);
     const [transcription, setTranscription] = useState<string[]>(["Welcome! Start listening to see real-time captions here."]);
+    const [interim, setInterim] = useState<string>('');
     const [visualAlerts, setVisualAlerts] = useState<{ id: number; type: string }[]>([]);
     const [permissionState, setPermissionState] = useState<'granted' | 'denied' | 'prompt'>('prompt');
     const recognitionRef = useRef<any>(null);
@@ -25,18 +26,33 @@ export default function DeafMode({ onBack }: DeafModeProps) {
         // Initialize Speech Recognition
         if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
             const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = true;
-            recognitionRef.current.interimResults = true;
+            try {
+                recognitionRef.current = new SpeechRecognition();
+                recognitionRef.current.continuous = true;
+                recognitionRef.current.interimResults = true;
+            } catch (e) {
+                console.error("SpeechRecognition init failed", e);
+            }
 
             recognitionRef.current.onresult = (event: any) => {
                 let interimTranscript = '';
+                let finalTranscript = '';
+
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
-                        setTranscription(prev => [event.results[i][0].transcript, ...prev.slice(0, 10)]);
+                        finalTranscript += event.results[i][0].transcript;
                     } else {
                         interimTranscript += event.results[i][0].transcript;
                     }
+                }
+
+                if (finalTranscript) {
+                    setTranscription(prev => [finalTranscript, ...prev.slice(0, 50)]);
+                    setInterim(''); // Clear interim when final is pushed
+                }
+
+                if (interimTranscript) {
+                    setInterim(interimTranscript);
                 }
             };
 
@@ -95,8 +111,11 @@ export default function DeafMode({ onBack }: DeafModeProps) {
                         });
                     }
 
+                    // Optmization: Throttle detection to ~10 times per second instead of 60
                     if (isListening) {
-                        animationFrameId = requestAnimationFrame(detectSound);
+                        setTimeout(() => {
+                            animationFrameId = requestAnimationFrame(detectSound);
+                        }, 100);
                     }
                 };
 
@@ -217,12 +236,25 @@ export default function DeafMode({ onBack }: DeafModeProps) {
                         </div>
 
                         <div className="flex-1 overflow-y-auto space-y-6 scrollbar-hide">
+                            {/* Interim (Real-time) Result */}
+                            {interim && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="p-6 rounded-3xl bg-white/20 text-3xl font-bold border-l-4 border-pink-500"
+                                >
+                                    {interim} <span className="animate-pulse">|</span>
+                                </motion.div>
+                            )}
+
+                            {/* Finalized Results */}
                             {transcription.map((text, i) => (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
-                                    className={`p-6 rounded-3xl ${i === 0 ? 'bg-white/10 text-3xl font-bold' : 'bg-white/5 text-xl opacity-40'}`}
+                                    layout
+                                    className={`p-6 rounded-3xl ${i === 0 && !interim ? 'bg-white/10 text-3xl font-bold' : 'bg-white/5 text-xl opacity-60'}`}
                                 >
                                     {text}
                                 </motion.div>

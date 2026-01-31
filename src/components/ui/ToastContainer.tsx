@@ -1,8 +1,9 @@
+import { type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast, type ToastType } from '../../context/ToastContext';
 import { CheckCircle2, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
 
-const icons: Record<ToastType, JSX.Element> = {
+const icons: Record<ToastType, ReactNode> = {
     success: <CheckCircle2 className="w-5 h-5 text-green-400" />,
     error: <AlertCircle className="w-5 h-5 text-red-400" />,
     info: <Info className="w-5 h-5 text-blue-400" />,

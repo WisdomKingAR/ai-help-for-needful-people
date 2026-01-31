@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GestureRecognizer, DrawingUtils, GestureRecognizerResult } from '@mediapipe/tasks-vision';
+import { GestureRecognizer, DrawingUtils } from '@mediapipe/tasks-vision';
 import { createGestureRecognizer } from '../../lib/mediapipe-init';
+import { detectASLGesture } from './aslHeuristics';
 
 export function useHandGesture() {
     const [isInitializing, setIsInitializing] = useState(true);
@@ -11,7 +12,6 @@ export function useHandGesture() {
     const [error, setError] = useState<string | null>(null);
 
     const recognizerRef = useRef<GestureRecognizer | null>(null);
-    const requestRef = useRef<number>();
 
     useEffect(() => {
         const init = async () => {
@@ -69,15 +69,31 @@ export function useHandGesture() {
             ctx.restore();
 
             // Process gesture results
+            let finalGesture = 'None';
+            let finalConfidence = 0;
+
+            // 1. Check standard MediaPipe gestures
             if (results.gestures.length > 0 && results.gestures[0].length > 0) {
-                const primaryGesture = results.gestures[0][0];
-                setGestureOutput({
-                    gesture: primaryGesture.categoryName,
-                    confidence: primaryGesture.score
-                });
-            } else {
-                setGestureOutput({ gesture: 'None', confidence: 0 });
+                const primary = results.gestures[0][0];
+                finalGesture = primary.categoryName;
+                finalConfidence = primary.score;
             }
+
+            // 2. Override/Augment with custom ASL heuristics
+            if (results.landmarks && results.landmarks.length > 0) {
+                const aslMatch = detectASLGesture(results.landmarks[0]);
+
+                // FORCE PRIORITY for numbers 1, 2, 3
+                if (aslMatch) {
+                    finalGesture = aslMatch.gesture;
+                    finalConfidence = aslMatch.confidence;
+                }
+            }
+
+            setGestureOutput({
+                gesture: finalGesture,
+                confidence: finalConfidence
+            });
 
         } catch (err) {
             console.warn('Prediction error (usually frame timing):', err);

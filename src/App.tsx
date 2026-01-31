@@ -16,18 +16,19 @@ function App() {
 
   useEffect(() => {
     // Announce mode change for accessibility
-    if (activeMode !== 'none') {
+    // Announce mode change for accessibility
+    if (activeMode !== 'none' && 'speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(`${activeMode} mode activated`);
       window.speechSynthesis.speak(utterance);
     }
   }, [activeMode]);
 
   return (
-    <div className="min-h-screen w-full relative overflow-hidden text-white font-sans selection:bg-brand-primary selection:text-white">
+    <div className="min-h-screen w-full relative overflow-hidden text-[#1A2847] font-sans selection:bg-brand-primary selection:text-white">
       {/* Background Decorative Elements */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/20 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-secondary/20 blur-[120px] rounded-full" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-secondary/10 blur-[120px] rounded-full" />
       </div>
 
       {/* Navigation Header */}
@@ -41,7 +42,7 @@ function App() {
           <div className="p-2 bg-brand-primary rounded-xl shadow-lg shadow-brand-primary/30">
             <Brain className="w-6 h-6 text-white" />
           </div>
-          <span className="text-2xl font-bold tracking-tight">AI <span className="gradient-text">Accessibility</span></span>
+          <span className="text-2xl font-bold tracking-tight text-[#1A2847]">AI <span className="text-gradient">Accessibility</span></span>
         </motion.div>
 
         <div className="flex items-center gap-4">
@@ -61,7 +62,7 @@ function App() {
             >
               <header className="mb-12 text-center md:text-left">
                 <motion.h1
-                  className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight"
+                  className="text-5xl md:text-7xl font-extrabold mb-4 leading-tight text-[#1A2847]"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -70,7 +71,7 @@ function App() {
                   <span className="gradient-text">Digital Companion</span>
                 </motion.h1>
                 <motion.p
-                  className="text-lg text-white/60 max-w-2xl"
+                  className="text-lg text-gray-600 max-w-2xl"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}

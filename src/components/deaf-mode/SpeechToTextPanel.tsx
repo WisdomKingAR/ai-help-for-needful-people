@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSpeechRecognition } from '../../features/speech/useSpeechRecognition';
 import { Download, Mic, MicOff, Trash2 } from 'lucide-react';
 
@@ -14,7 +14,6 @@ export function SpeechToTextPanel() {
 
     const {
         isListening,
-        transcript,
         interimTranscript,
         startListening,
         stopListening,

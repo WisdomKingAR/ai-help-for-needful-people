@@ -1,0 +1,27 @@
+[
+  {
+    "id": "TC001",
+    "title": "test authentication user registration and login",
+    "description": "Verify secure user registration and login functionality with JWT and biometric/MFA features to ensure only authorized users can access the system."
+  },
+  {
+    "id": "TC002",
+    "title": "test dashboard real time accessibility statistics",
+    "description": "Validate that the dashboard displays real-time accessibility statistics and compliance trends accurately and updates dynamically."
+  },
+  {
+    "id": "TC003",
+    "title": "test accessibility controls settings application",
+    "description": "Ensure that the accessibility controls allow users to configure voice navigation, screen readers, and visual adjustments, and that these settings apply immediately and correctly."
+  },
+  {
+    "id": "TC004",
+    "title": "test gesture recognition vision based sign language translation",
+    "description": "Test the gesture recognition feature to confirm it detects and translates hand gestures accurately using MediaPipe and the Flask backend."
+  },
+  {
+    "id": "TC005",
+    "title": "test ai assistant conversational ai functionality",
+    "description": "Verify the AI assistant provides accurate conversational AI responses for deep content understanding and user assistance."
+  }
+]

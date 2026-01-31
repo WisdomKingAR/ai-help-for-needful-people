@@ -49,10 +49,10 @@ export default function SettingsDropdown() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`p-3 rounded-full glass-panel hover:bg-white/10 transition-all duration-300 glow-focus ${isOpen ? 'bg-white/10 ring-2 ring-white/20' : ''}`}
+                className={`p-3 rounded-full clay-card hover:bg-gray-50 transition-all duration-300 glow-focus ${isOpen ? 'bg-gray-50 ring-2 ring-brand-primary/20' : ''}`}
                 aria-label="Settings"
             >
-                <Settings className={`w-5 h-5 transition-transform duration-500 ${isOpen ? 'rotate-180 text-brand-primary' : 'text-white'}`} />
+                <Settings className={`w-5 h-5 transition-transform duration-500 ${isOpen ? 'rotate-180 text-brand-primary' : 'text-[#1A2847]'}`} />
             </button>
 
             <AnimatePresence>
@@ -62,10 +62,9 @@ export default function SettingsDropdown() {
                         animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                         exit={{ opacity: 0, y: 10, scale: 0.95, filter: "blur(10px)" }}
                         transition={{ duration: 0.2, ease: "circOut" }}
-                        className="absolute right-0 top-full mt-4 w-96 glass-panel rounded-2xl p-2 z-[100] flex flex-col shadow-2xl border border-white/10 bg-black/80 backdrop-blur-xl overflow-hidden"
+                        className="absolute right-0 top-full mt-4 w-96 clay-card p-2 z-[100] flex flex-col shadow-2xl overflow-hidden"
                     >
-                        {/* Header */}
-                        <div className="px-4 py-3 border-b border-white/10 mb-2 flex items-center gap-3">
+                        <div className="px-4 py-3 border-b border-gray-100 mb-2 flex items-center gap-3">
                             {activeView === 'accessibility' && (
                                 <button
                                     onClick={() => setActiveView('main')}
@@ -75,7 +74,7 @@ export default function SettingsDropdown() {
                                 </button>
                             )}
                             <div>
-                                <h3 className="font-bold text-white text-lg">
+                                <h3 className="font-bold text-[#1A2847] text-lg">
                                     {activeView === 'main' ? 'Settings' : 'Accessibility Tools'}
                                 </h3>
                                 <p className="text-xs text-brand-primary font-medium tracking-wide">
@@ -98,7 +97,7 @@ export default function SettingsDropdown() {
                                 <MenuItem icon={Bell} label="Notifications" desc="Alert preferences" onClick={() => handleItemClick("Notification Settings")} />
                                 <MenuItem icon={Moon} label="Appearance" desc="Theme settings" onClick={() => handleItemClick("Appearance Settings")} />
                                 <MenuItem icon={Shield} label="Privacy" desc="Data controls" onClick={() => handleItemClick("Privacy Settings")} />
-                                <div className="h-px bg-white/10 my-2 mx-2" />
+                                <div className="h-px bg-gray-100 my-2 mx-2" />
                                 <MenuItem icon={HelpCircle} label="Help & Support" desc="Get assistance" onClick={() => handleItemClick("Help Center")} />
                                 <MenuItem icon={LogOut} label="Reset App" desc="Clear session" onClick={() => window.location.reload()} variant="danger" />
                             </motion.div>
@@ -121,11 +120,11 @@ export default function SettingsDropdown() {
                                     {activeAccessTab === 'controls' && (
                                         <div className="space-y-6 pt-2">
                                             {/* Contrast Toggle */}
-                                            <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                            <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-3">
                                                         <Contrast className="w-5 h-5 text-brand-secondary" />
-                                                        <span className="font-bold">High Contrast</span>
+                                                        <span className="font-bold text-[#1A2847]">High Contrast</span>
                                                     </div>
                                                     <button
                                                         onClick={() => setHighContrast(!highContrast)}
@@ -134,21 +133,21 @@ export default function SettingsDropdown() {
                                                         <div className={`w-4 h-4 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-7' : 'translate-x-1'}`} />
                                                     </button>
                                                 </div>
-                                                <p className="text-xs text-white/50">Increases visibility and reduces eye strain.</p>
+                                                <p className="text-xs text-gray-500">Increases visibility and reduces eye strain.</p>
                                             </div>
 
                                             {/* Font Size Controls */}
-                                            <div className="p-4 rounded-xl bg-white/5 border border-white/5">
+                                            <div className="p-4 rounded-xl bg-gray-50 border border-gray-100">
                                                 <div className="flex items-center gap-3 mb-4">
                                                     <Type className="w-5 h-5 text-brand-primary" />
-                                                    <span className="font-bold">Text Size</span>
+                                                    <span className="font-bold text-[#1A2847]">Text Size</span>
                                                 </div>
                                                 <div className="flex gap-2">
                                                     {[0.8, 1, 1.2, 1.5].map((s) => (
                                                         <button
                                                             key={s}
                                                             onClick={() => setFontSize(s)}
-                                                            className={`flex-1 py-2 rounded-lg text-sm font-bold border transition-all ${fontSize === s ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                                                            className={`flex-1 py-2 rounded-lg text-sm font-bold border transition-all ${fontSize === s ? 'bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-gray-100 border-gray-200 text-[#1A2847] hover:bg-gray-200'}`}
                                                         >
                                                             {s === 1 ? 'Aa' : `${Math.round(s * 100)}%`}
                                                         </button>
@@ -162,7 +161,7 @@ export default function SettingsDropdown() {
                                                     setFontSize(1);
                                                     showToast("Settings Reset", "success", "Display settings restored to default.");
                                                 }}
-                                                className="w-full py-3 bg-white/5 hover:bg-white/10 text-white/60 hover:text-white rounded-xl text-sm font-bold transition-all"
+                                                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-[#1A2847] rounded-xl text-sm font-bold transition-all"
                                             >
                                                 Reset Display Settings
                                             </button>
@@ -199,19 +198,19 @@ function MenuItem({
         <button
             onClick={onClick}
             className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all group text-left
-                ${variant === 'danger' ? 'hover:bg-red-500/10' : 'hover:bg-white/10'}
+                ${variant === 'danger' ? 'hover:bg-red-50' : 'hover:bg-gray-50'}
             `}
         >
-            <div className={`p-2 rounded-lg transition-colors ${variant === 'danger' ? 'bg-red-500/20 text-red-400 group-hover:text-red-300' : 'bg-white/5 text-white/70 group-hover:text-brand-primary group-hover:bg-brand-primary/10'}`}>
+            <div className={`p-2 rounded-lg transition-colors ${variant === 'danger' ? 'bg-red-100 text-red-500 group-hover:text-red-600' : 'bg-gray-100 text-gray-600 group-hover:text-brand-primary group-hover:bg-brand-primary/10'}`}>
                 <Icon className="w-5 h-5 shadow-sm" />
             </div>
             <div className="flex-1">
-                <span className={`block text-sm font-bold transition-colors ${variant === 'danger' ? 'text-red-400 group-hover:text-red-300' : 'text-white/90 group-hover:text-white'}`}>
+                <span className={`block text-sm font-bold transition-colors ${variant === 'danger' ? 'text-red-500 group-hover:text-red-600' : 'text-[#1A2847] group-hover:text-[#1A2847]'}`}>
                     {label}
                 </span>
-                {desc && <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors">{desc}</span>}
+                {desc && <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">{desc}</span>}
             </div>
-            {label === 'Accessibility Tools' && <div className="text-white/20 group-hover:text-white transition-colors">→</div>}
+            {label === 'Accessibility Tools' && <div className="text-gray-300 group-hover:text-[#1A2847] transition-colors">→</div>}
         </button>
     );
 }
@@ -221,7 +220,7 @@ function AccessTab({ active, onClick, icon: Icon, label }: { active: boolean, on
         <button
             onClick={onClick}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all flex-1 justify-center whitespace-nowrap
-                ${active ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}
+                ${active ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-[#1A2847]'}
             `}
         >
             <Icon className="w-3 h-3" />

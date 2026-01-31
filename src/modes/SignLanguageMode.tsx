@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { FilesetResolver, GestureRecognizer } from '@mediapipe/tasks-vision';
 import { Camera, RefreshCw, Hand, AlertCircle, Maximize2, Minimize2, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../context/ToastContext';
 import { LoadingOverlay } from '../components/ui/LoadingOverlay';
+import { detectASLGesture } from '../features/vision/aslHeuristics';
 
 export default function SignLanguageMode({ onBack }: { onBack: () => void }) {
     const webcamRef = useRef<Webcam>(null);
@@ -14,10 +15,19 @@ export default function SignLanguageMode({ onBack }: { onBack: () => void }) {
     const [isProcessing, setIsProcessing] = useState(false);
     const lastVideoTime = useRef(-1);
     const requestRef = useRef<number>(0);
+    const lastSpokenRef = useRef<string>('');
+    const lastSpokenTimeRef = useRef<number>(0);
+    const gestureHoldStartRef = useRef<number>(0);
+    const currentStableGestureRef = useRef<string>('None');
+
     const [permissionState, setPermissionState] = useState<'granted' | 'denied' | 'prompt' | 'error'>('prompt');
     const [isFullscreen, setIsFullscreen] = useState(false);
 
     const { showToast } = useToast();
+
+    // ... (rest of init)
+
+
 
     // Initialize MediaPipe Gesture Recognizer
     useEffect(() => {
@@ -56,6 +66,26 @@ export default function SignLanguageMode({ onBack }: { onBack: () => void }) {
         init();
     }, [showToast]);
 
+    // Speech synthesis for gesture announcements
+    const announce = useCallback((text: string) => {
+        if (!('speechSynthesis' in window)) return;
+
+        const now = Date.now();
+        // Debounce: don't repeat same gesture within 3 seconds
+        if (text === lastSpokenRef.current && now - lastSpokenTimeRef.current < 3000) return;
+
+        // Minimum gap between any speech (1.5s)
+        if (now - lastSpokenTimeRef.current < 1500) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+
+        lastSpokenRef.current = text;
+        lastSpokenTimeRef.current = now;
+    }, []);
+
     const predict = () => {
         if (webcamRef.current && webcamRef.current.video && recognizer) {
             const video = webcamRef.current.video;
@@ -65,11 +95,60 @@ export default function SignLanguageMode({ onBack }: { onBack: () => void }) {
 
                 if (result.gestures.length > 0) {
                     const category = result.gestures[0][0];
-                    setGesture(category.categoryName);
-                    setConfidence(category.score);
+                    let detectedGesture = category.categoryName;
+                    let detectedConfidence = category.score;
+
+                    // Override with custom ASL heuristics for letters/numbers
+                    if (result.landmarks && result.landmarks.length > 0) {
+                        const aslResult = detectASLGesture(result.landmarks[0]);
+                        if (aslResult) {
+                            detectedGesture = aslResult.gesture;
+                            detectedConfidence = aslResult.confidence;
+                        }
+                    }
+
+                    setGesture(detectedGesture);
+                    setConfidence(detectedConfidence);
+
+                    // Stability Check for Speech
+                    if (detectedGesture !== currentStableGestureRef.current) {
+                        // New gesture detected, start timer
+                        currentStableGestureRef.current = detectedGesture;
+                        gestureHoldStartRef.current = Date.now();
+                    } else if (detectedGesture !== 'None') {
+                        // Same gesture, check hold time
+                        const holdTime = Date.now() - gestureHoldStartRef.current;
+                        // Require 600ms hold time with high confidence before speaking
+                        if (holdTime > 600 && detectedConfidence > 0.8) {
+                            announce(detectedGesture);
+                        }
+                    }
                 } else {
-                    setGesture('None');
-                    setConfidence(0);
+                    // Check ASL heuristics even without MediaPipe gesture
+                    let detectedGesture = 'None';
+                    let detectedConfidence = 0;
+
+                    if (result.landmarks && result.landmarks.length > 0) {
+                        const aslResult = detectASLGesture(result.landmarks[0]);
+                        if (aslResult) {
+                            detectedGesture = aslResult.gesture;
+                            detectedConfidence = aslResult.confidence;
+                        }
+                    }
+
+                    setGesture(detectedGesture);
+                    setConfidence(detectedConfidence);
+
+                    // Stability Check
+                    if (detectedGesture !== currentStableGestureRef.current) {
+                        currentStableGestureRef.current = detectedGesture;
+                        gestureHoldStartRef.current = Date.now();
+                    } else if (detectedGesture !== 'None') {
+                        const holdTime = Date.now() - gestureHoldStartRef.current;
+                        if (holdTime > 600 && detectedConfidence > 0.8) {
+                            announce(detectedGesture);
+                        }
+                    }
                 }
             }
         }

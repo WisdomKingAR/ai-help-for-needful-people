@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHandGesture } from '../../features/vision/useHandGesture';
 import { Camera, RefreshCw } from 'lucide-react';
 
@@ -7,7 +7,37 @@ export function GestureDetection() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const { isInitializing, gestureOutput, error, predictWebcam } = useHandGesture();
-    const requestRef = useRef<number>();
+    const requestRef = useRef<number | null>(null);
+    const lastSpokenRef = useRef<string>('');
+    const lastSpokenTimeRef = useRef<number>(0);
+
+    const announce = useCallback((text: string) => {
+        const now = Date.now();
+        // Debounce: don't repeat same gesture within 3 seconds, or any gesture within 1 second
+        if (text === lastSpokenRef.current && now - lastSpokenTimeRef.current < 3000) return;
+        if (now - lastSpokenTimeRef.current < 1000) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.2;
+        window.speechSynthesis.speak(utterance);
+
+        lastSpokenRef.current = text;
+        lastSpokenTimeRef.current = now;
+    }, []);
+
+    // Voice output effect
+    useEffect(() => {
+        if (isCameraActive && gestureOutput.gesture !== 'None' && gestureOutput.confidence > 0.8) {
+            announce(gestureOutput.gesture);
+        }
+    }, [gestureOutput, isCameraActive, announce]);
+
+    const loop = useCallback(() => {
+        if (videoRef.current && canvasRef.current && isCameraActive) {
+            predictWebcam(videoRef.current, canvasRef.current);
+            requestRef.current = requestAnimationFrame(loop);
+        }
+    }, [isCameraActive, predictWebcam]);
 
     const startCamera = async () => {
         try {
@@ -20,7 +50,6 @@ export function GestureDetection() {
                 videoRef.current.onloadedmetadata = () => {
                     videoRef.current?.play();
                     setIsCameraActive(true);
-                    loop();
                 };
             }
         } catch (err) {
@@ -40,13 +69,6 @@ export function GestureDetection() {
         }
     };
 
-    const loop = () => {
-        if (videoRef.current && canvasRef.current && isCameraActive) {
-            predictWebcam(videoRef.current, canvasRef.current);
-            requestRef.current = requestAnimationFrame(loop);
-        }
-    };
-
     // Keep looping as long as camera is active
     useEffect(() => {
         if (isCameraActive) {
@@ -57,7 +79,7 @@ export function GestureDetection() {
                 cancelAnimationFrame(requestRef.current);
             }
         };
-    }, [isCameraActive, predictWebcam]);
+    }, [isCameraActive, loop]);
 
     // Clean up on unmount
     useEffect(() => {

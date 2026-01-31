@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTextToSpeech } from '../../features/speech/useTextToSpeech';
 import { Play, Pause, Square, Volume2, Zap, Turtle, Rabbit } from 'lucide-react';
 

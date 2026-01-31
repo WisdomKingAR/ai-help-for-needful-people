@@ -24,12 +24,12 @@ export const FloatingCard = ({ children, className = '', delay = 0, onClick }: F
                 scale: 1.05,
                 rotateY: 5,
                 rotateX: 5,
-                boxShadow: "0 0 40px rgba(59, 130, 246, 0.4)"
+                boxShadow: "0 16px 48px rgba(74, 144, 226, 0.25)"
             }}
             className={`glass p-8 float-shadow transition-all duration-500 overflow-hidden relative group ${className}`}
         >
-            {/* Holographic Sweep */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-sweep pointer-events-none" />
+            {/* Subtle Sweep Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/[0.02] to-transparent -translate-x-full group-hover:animate-sweep pointer-events-none" />
 
             <div className="relative z-10">
                 {children}

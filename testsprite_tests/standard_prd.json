@@ -1,0 +1,88 @@
+{
+  "meta": {
+    "project": "Accessibility Companion - AI for Everyone",
+    "date": "2026-01-29",
+    "prepared_by": "Team Accessibility Companion"
+  },
+  "product_overview": "The Accessibility Companion is an AI-powered accessibility layer that enhances existing websites to be usable by people with various disabilities, including vision, hearing, motor, and cognitive challenges. It integrates real-time speech-to-text, text-to-speech, hand gesture recognition, text formatting with dyslexia-friendly fonts and color themes, and voice command features, aiming to make the web universally accessible.",
+  "core_goals": [
+    "Enable real-time speech-to-text transcription for deaf and hard-of-hearing users.",
+    "Provide intelligent text-to-speech capabilities for blind and low vision users.",
+    "Detect and classify hand gestures to allow motor-disabled users to control web interfaces hands-free.",
+    "Offer text formatting options including dyslexia-friendly fonts, adjustable font sizes, spacing, and high contrast color themes for cognitive accessibility.",
+    "Support voice commands for basic website interaction and navigation.",
+    "Create an intuitive and responsive user interface accessible on desktop and mobile browsers.",
+    "Deliver all features as a client-side web app with optional backend APIs for speech recognition and gesture processing."
+  ],
+  "key_features": [
+    "Real-Time Speech-to-Text with live transcript panel using Google Speech-to-Text API.",
+    "Text-to-Speech capability with selectable voice options, speed control, and text highlighting during playback.",
+    "Hand Gesture Recognition using MediaPipe and custom heuristics to detect five common gestures and map them to web actions like click, scroll, pause, and play.",
+    "Voice Command Parser to handle common commands such as 'click', 'scroll down/up', and 'read this' with simple keyword matching.",
+    "Text Formatting and Simplification including dyslexia-friendly fonts, adjustable font size, line and letter spacing, and multiple high contrast color themes.",
+    "Accessibility Toolbar providing toggles and settings for all features in a unified UI accessible on multiple devices.",
+    "Fully responsive and accessible UI components built with React and Tailwind CSS."
+  ],
+  "user_flow_summary": [
+    "User launches the Accessibility Companion web app or extension.",
+    "User selects a mode or feature from the accessibility toolbar: Text-to-Speech, Speech-to-Text, Hand Gesture Recognition, or Text Formatting.",
+    "For Speech-to-Text, user enables microphone access, speaks, and sees real-time transcription on screen with options to copy or save.",
+    "For Text-to-Speech, user selects text on any webpage and uses the tool to listen to it, adjusting voice speed and type as needed.",
+    "For Hand Gesture Recognition, user grants camera access and performs gestures which the system detects and maps to website navigation actions with on-screen visual feedback.",
+    "Users customize text formatting options to improve readability, choosing fonts, sizes, spacing, and color themes.",
+    "Voice commands can be spoken and parsed to interact with the website for basic control.",
+    "Settings persist during the session and can be saved, with fallback and demo modes available during errors or outages."
+  ],
+  "validation_criteria": [
+    "Speech-to-Text transcriptions appear in real-time with over 85% accuracy on typical speech samples.",
+    "Text-to-Speech reads selected text aloud with correct voice and speed settings and highlights text during playback.",
+    "Hand Gesture Recognition accurately detects and classifies at least 5 gestures with confidence above 80%, triggering mapped actions reliably.",
+    "Voice commands are parsed correctly for predefined keywords and produce expected interface responses.",
+    "Text formatting applies correctly and changes reflect immediately on the webpage, improving readability for dyslexic and cognitive users.",
+    "API endpoints for gesture detection and command execution respond within 200ms under normal load.",
+    "The UI components are fully responsive, accessible (keyboard navigation, screen reader friendly), and pass WCAG contrast guidelines.",
+    "All features handle errors gracefully with fallback modes or demo data to maintain usability during failures."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+      "TensorFlow.js",
+      "MediaPipe"
+    ],
+    "features": [
+      {
+        "name": "Blind Mode",
+        "description": "Object detection using TensorFlow.js COCO-SSD model with text-to-speech announcements.",
+        "files": [
+          "src/modes/BlindMode.tsx"
+        ]
+      },
+      {
+        "name": "Deaf Mode",
+        "description": "Real-time speech-to-text transcription for deaf users, with visual sound alerts.",
+        "files": [
+          "src/modes/DeafMode.tsx"
+        ]
+      },
+      {
+        "name": "Sign Language Mode",
+        "description": "ASL gesture recognition using MediaPipe and custom heuristics for alphabet/numbers.",
+        "files": [
+          "src/modes/SignLanguageMode.tsx",
+          "src/features/vision/aslHeuristics.ts",
+          "src/features/vision/useHandGesture.ts"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Main navigation hub for accessing different accessibility modes.",
+        "files": [
+          "src/components/Dashboard.tsx"
+        ]
+      }
+    ]
+  }
+}

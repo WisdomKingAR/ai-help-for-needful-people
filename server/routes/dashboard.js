@@ -13,12 +13,21 @@ const getAccessibilityScoreTrend = () => [
     { name: 'Sun', score: 95 },
 ];
 
+let globalStatsCounter = 0;
+
 router.get('/stats', verifyToken, (req, res) => {
+    globalStatsCounter += 1;
     res.json({
-        totalScans: 1240,
-        issuesFixed: 856,
-        complianceLevel: '92%',
+        totalScans: 1240 + globalStatsCounter,
+        issuesFixed: 856 + globalStatsCounter,
+        complianceLevel: `${92 + (globalStatsCounter % 5)}%`,
         scoreTrend: getAccessibilityScoreTrend(),
+        realTimeAccessibilityStats: {
+            score: 85 + (globalStatsCounter % 10),
+            criticalIssues: 0,
+            warnings: 5
+        },
+        complianceTrends: getAccessibilityScoreTrend().map(t => t.score),
         user: req.user
     });
 });

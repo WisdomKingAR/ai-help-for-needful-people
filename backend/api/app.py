@@ -100,6 +100,7 @@ def detect_gesture():
                 'gesture': 'none',
                 'confidence': 0.0,
                 'action': None,
+                'translation': 'none',
                 'hands_detected': 0
             })
 
@@ -117,6 +118,7 @@ def detect_gesture():
             'gesture': gesture.value,
             'confidence': float(confidence),
             'action': action,
+            'translation': action if action else gesture.value,
             'hands_detected': len(hand_data),
             'handedness': primary_hand['handedness']
         })

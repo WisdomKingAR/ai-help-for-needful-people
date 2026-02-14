@@ -2,8 +2,10 @@ const express = require('express');
 const { verifyToken } = require('../middleware/security');
 const router = express.Router();
 
-// Mock accessibility settings with nested structure matching tests
-let accessibilitySettings = {
+const persistenceService = require('../services/persistenceService');
+
+// Initial default settings
+const defaultSettings = {
     voiceNavigation: {
         enabled: false,
         language: "en-US",
@@ -24,6 +26,8 @@ let accessibilitySettings = {
     }
 };
 
+let accessibilitySettings = persistenceService.load('accessibility_settings.json', defaultSettings);
+
 // GET current settings
 router.get('/settings', verifyToken, (req, res) => {
     res.json(accessibilitySettings);
@@ -32,12 +36,14 @@ router.get('/settings', verifyToken, (req, res) => {
 // PUT update settings
 router.put('/settings', verifyToken, (req, res) => {
     accessibilitySettings = { ...accessibilitySettings, ...req.body };
+    persistenceService.save('accessibility_settings.json', accessibilitySettings);
     res.json(accessibilitySettings);
 });
 
 // POST alias for settings (if needed)
 router.post('/settings', verifyToken, (req, res) => {
     accessibilitySettings = { ...accessibilitySettings, ...req.body };
+    persistenceService.save('accessibility_settings.json', accessibilitySettings);
     res.json(accessibilitySettings);
 });
 

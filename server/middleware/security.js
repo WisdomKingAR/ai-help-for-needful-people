@@ -14,8 +14,15 @@ const authLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-// Mock user "locking" store (In a real app, this would be in the database)
-const lockoutStore = new Map();
+const persistenceService = require('../services/persistenceService');
+
+// Mock user "locking" store with persistence
+const initialLockouts = persistenceService.load('lockouts.json', []);
+const lockoutStore = new Map(initialLockouts);
+
+const syncLockouts = () => {
+    persistenceService.save('lockouts.json', Array.from(lockoutStore.entries()));
+};
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
@@ -45,11 +52,13 @@ const handleFailedLogin = (email) => {
     }
 
     lockoutStore.set(email, status);
+    syncLockouts();
     return status;
 };
 
 const resetLockout = (email) => {
     lockoutStore.delete(email);
+    syncLockouts();
 };
 
 const verifyToken = (req, res, next) => {
